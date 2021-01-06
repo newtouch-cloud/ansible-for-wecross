@@ -1,0 +1,44 @@
+@startuml
+
+start
+
+if (部署环境准备) then
+  :检查系统版本;
+  :安装 JDK 和 Gradle;
+  :MySQL 由用户自行部署，\n项目只提供相关配置的变量设置;
+elseif (部署 WeCross Router) then
+  :下载 WeCross;
+  :生成跨链路由文件 ipfile;
+  :使用脚本\nbuild_wecross.sh\n生成跨链路由;
+elseif (部署账户服务) then
+  :下载 download_account_manager.sh;
+  :拷贝 WeCross Router 证书;
+  :生成账户服务私钥;
+  :配置 conf/application.toml;
+  :启动跨链路由;
+elseif (接入 FISCO BCOS 链) then
+  :用 add_chain.sh 脚本在\nconf 目录下生成 BCOS 链的配置框架;
+  :拷贝 FISCO BCOS 节点 SDK 的证书;
+  :编辑配置文件 stub.toml;
+  :部署系统合约（分国密和非国密）;
+elseif (接入 Hyperledger Fabric 链) then
+  :生成账户配置框架;
+  :修改账户配置;
+  :拷贝证书文件;
+  :生成插件配置框架;
+  :拷贝证书;
+  :编辑配置文件;
+  :部署系统合约;
+elseif (部署 WeCross 控制台(可选)) then
+  :下载WeCross控制台;
+  :配置控制台;
+  :启动控制台;
+  :配置跨链账户 - 添加BCOS链账户;
+  :配置跨链账户 - 添加Fabric链账户;
+elseif (部署 WeCross 网页管理台(可选)) then
+  :拉取代码，编译静态文件;
+  :静态文件拷入指定的跨链路由节点;
+  :配置远程访问（可选）;
+endif
+
+@enduml
