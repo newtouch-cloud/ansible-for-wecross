@@ -1,0 +1,31 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2021-03-12T16:08:09+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: pre_tasks.yml
+# @Last modified by:   haibin
+# @Last modified time: 2021-03-12T18:19:09+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+- name: 检查相关目录
+  stat:
+    path: "{{ wecross_workdir }}/{{ item }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  with_items:
+    - routers-payment
+    - WeCross
+    - WeCross-Account-Manager
+    - WeCross-Console
+  register: __check_dir
+
+- set_fact:
+    router_payment_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/routers-payment') | map(attribute='stat.exists') }}"
+    account_manager_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/WeCross-Account-Manager') | map(attribute='stat.exists') }}"
+    console_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/WeCross-Console') | map(attribute='stat.exists') }}"
+
+# - name: "创建 {{ wecross_workdir }} 目录"
+#   file:
+#     path: "{{ wecross_workdir }}"
+#     state: directory
+#

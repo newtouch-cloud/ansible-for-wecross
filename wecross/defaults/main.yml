@@ -1,0 +1,42 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2021-01-06T16:00:59+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: main.yml
+# @Last modified by:   haibin
+# @Last modified time: 2021-03-12T18:29:13+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+
+
+---
+# defaults file for wecross
+
+wecross_version: 1.1.0
+
+wecross_workdir: /tmp/wecross-networks
+
+wecross_enable_demo: false
+
+wecross_dl_url:
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeCross/WeCross/v{{ wecross_version }}/WeCross.tar.gz"
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeCross/WeCross-Console/v{{ wecross_version }}/WeCross-Console.tar.gz"
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeCross/WeCross-Account-Manager/v{{ wecross_version }}/WeCross-Account-Manager.tar.gz"
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeCross/Demo/v{{ wecross_version }}/demo.tar.gz"
+
+wecross_router_list:
+  - 127.0.0.1:8250:25500
+  - 127.0.0.1:8251:25501
+
+wecross_account_manager_config:
+  service:
+    address: '0.0.0.0'
+    port: 8340
+  admin:
+    name: 'org1-admin'
+    password: '123456'
+  db:
+    url: 'jdbc:mysql://localhost:3306/wecross_account_manager'
+    username: 'root'
+    password: '123456'
+  ext:
+    allowImageAuthCodeEmpty: true
