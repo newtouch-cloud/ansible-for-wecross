@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-03-12T18:19:09+08:00
+# @Last modified time: 2021-03-17T16:08:12+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 - name: 检查相关目录
@@ -17,15 +17,28 @@
     - WeCross
     - WeCross-Account-Manager
     - WeCross-Console
+  loop_control:
+    label: "{{ wecross_workdir }}/{{ item }}"
   register: __check_dir
 
-- set_fact:
-    router_payment_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/routers-payment') | map(attribute='stat.exists') }}"
-    account_manager_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/WeCross-Account-Manager') | map(attribute='stat.exists') }}"
-    console_exists: "{{ __check_dir.results | selectattr('stat.path', '==', wecross_workdir + '/WeCross-Console') | map(attribute='stat.exists') }}"
+# - debug:
+#     msg: "{{ __check_dir.results | selectattr('invocation.module_args.path', '==', wecross_workdir + '/routers-payment') | map(attribute='stat.exists') | first }}"
 
-# - name: "创建 {{ wecross_workdir }} 目录"
-#   file:
-#     path: "{{ wecross_workdir }}"
-#     state: directory
-#
+- set_fact:
+    router_payment_exists: "{{ __check_dir.results | selectattr('invocation.module_args.path', '==', wecross_workdir + '/routers-payment') | map(attribute='stat.exists') | first }}"
+    account_manager_exists: "{{ __check_dir.results | selectattr('invocation.module_args.path', '==', wecross_workdir + '/WeCross-Account-Manager') | map(attribute='stat.exists') | first }}"
+    console_exists: "{{ __check_dir.results | selectattr('invocation.module_args.path', '==', wecross_workdir + '/WeCross-Console') | map(attribute='stat.exists') | first }}"
+
+- block:
+    - name: "创建 {{ wecross_workdir }} 目录"
+      file:
+        path: "{{ wecross_workdir }}"
+        state: directory
+
+    - name: 下载解压安装文件
+      unarchive:
+        remote_src: true
+        src: "{{ item }}"
+        dest: "{{ wecross_workdir }}/"
+      loop: "{{ wecross_dl_url }}"
+  when: "false in (__check_dir.results | map(attribute='stat.exists'))"

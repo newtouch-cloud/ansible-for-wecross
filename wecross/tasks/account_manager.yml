@@ -3,21 +3,27 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: account_manager.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-03-12T18:22:46+08:00
+# @Last modified time: 2021-03-15T19:16:07+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
-- name: 拷贝证书
-  copy:
-    remote_src: true
-    src: "{{ item }}"
-    dest: "{{ wecross_workdir }}/WeCross-Account-Manager/conf/{{ item | basename }}"
-  with_fileglob:
-    - "{{ wecross_workdir }}/routers-payment/cert/sdk/*"
+- block:
+    - name: 拷贝证书
+      copy:
+        remote_src: true
+        src: "{{ item }}"
+        dest: "{{ wecross_workdir }}/WeCross-Account-Manager/conf/{{ item | basename }}"
+      with_fileglob:
+        - "{{ wecross_workdir }}/routers-payment/cert/sdk/*"
 
-- name: 生成私钥
-  command: bash create_rsa_keypair.sh -d conf/
-  args:
-    chdir: "{{ wecross_workdir }}/WeCross-Account-Manager/"
-  changed_when: false
+    - name: 生成私钥
+      command: bash create_rsa_keypair.sh -d conf/
+      args:
+        chdir: "{{ wecross_workdir }}/WeCross-Account-Manager/"
+      changed_when: false
+  when: "not account_manager_exists"
 
-- name:" 配置 {{ wecross_workdir }}/WeCross-Account-Manager/conf/application.toml"
+- name: "更新 {{ wecross_workdir }}/WeCross-Account-Manager/conf/application.toml"
+  template:
+    src: account_manager_application.toml.j2
+    dest: "{{ wecross_workdir }}/WeCross-Account-Manager/conf/application.toml"
+    backup: true
